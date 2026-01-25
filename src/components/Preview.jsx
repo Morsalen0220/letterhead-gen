@@ -5,12 +5,15 @@ export const Preview = React.forwardRef(({ info }, ref) => {
   return (
     <div 
       ref={ref} 
-      className="w-[21cm] min-h-[29.7cm] bg-white text-slate-800 p-16 flex flex-col relative overflow-hidden print:shadow-none"
-      style={{ fontFamily: info.design.fontFamily }}
+      className="w-[21cm] h-[29.7cm] bg-white text-slate-800 p-16 flex flex-col relative overflow-hidden print:shadow-none print:m-0 print:p-16"
+      style={{ 
+        fontFamily: info.design.fontFamily,
+        boxSizing: 'border-box' // Padding height-er bhitor thakbe
+      }}
     >
       {/* Design Elements */}
       <div className="absolute top-0 right-0 w-64 h-64 rounded-bl-full opacity-10 -mr-20 -mt-20" style={{ backgroundColor: info.design.primaryColor }}></div>
-      <div className="absolute bottom-0 left-0 w-32 h-2 bg-slate-200" style={{ backgroundColor: info.design.secondaryColor }}></div>
+      <div className="absolute bottom-0 left-0 w-full h-1" style={{ backgroundColor: info.design.primaryColor }}></div>
 
       {/* Header */}
       <div className="flex justify-between items-start border-b-2 pb-8 relative z-10" style={{ borderColor: info.design.primaryColor }}>
@@ -18,10 +21,10 @@ export const Preview = React.forwardRef(({ info }, ref) => {
           <h2 className="text-4xl font-black uppercase tracking-tighter" style={{ color: info.design.primaryColor }}>{info.companyName}</h2>
           <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{info.tagline}</p>
         </div>
-        <div className="text-right text-[10px] font-bold text-slate-600 uppercase">
-          <p className="flex items-center justify-end gap-2"><MapPin size={10} /> {info.contact.address}</p>
-          <p className="flex items-center justify-end gap-2"><Phone size={10} /> {info.contact.phone}</p>
-          <p className="flex items-center justify-end gap-2"><Mail size={10} /> {info.contact.email}</p>
+        <div className="text-right text-[10px] font-bold text-slate-600 uppercase space-y-1">
+          <p className="flex items-center justify-end gap-2"><MapPin size={10} style={{ color: info.design.primaryColor }} /> {info.contact.address}</p>
+          <p className="flex items-center justify-end gap-2"><Phone size={10} style={{ color: info.design.primaryColor }} /> {info.contact.phone}</p>
+          <p className="flex items-center justify-end gap-2"><Mail size={10} style={{ color: info.design.primaryColor }} /> {info.contact.email}</p>
         </div>
       </div>
 
@@ -35,7 +38,7 @@ export const Preview = React.forwardRef(({ info }, ref) => {
       {/* Content Area */}
       <div className="mt-16 flex-1 relative z-10">
         <div className="flex justify-between mb-10 text-sm font-bold">
-          <div className="whitespace-pre-wrap">{info.letter.recipient}</div>
+          <div className="whitespace-pre-wrap text-slate-700">{info.letter.recipient}</div>
           <div className="text-slate-400">DATE: {info.letter.date}</div>
         </div>
         <div className="mb-8 font-black uppercase text-sm border-l-4 pl-4" style={{ borderColor: info.design.primaryColor }}>
@@ -47,7 +50,7 @@ export const Preview = React.forwardRef(({ info }, ref) => {
       </div>
 
       {/* Footer */}
-      <div className="mt-20 pt-8 border-t border-slate-100 text-center text-[9px] text-slate-300 uppercase font-black tracking-widest">
+      <div className="mt-20 pt-8 border-t border-slate-100 text-center text-[9px] text-slate-300 uppercase font-black tracking-[0.5em]">
         Official Document • {info.companyName}
       </div>
     </div>
