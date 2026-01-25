@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* আপনি চাইলে বডির ব্যাকগ্রাউন্ড ফিক্সড করে দিতে পারেন */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #0f172a;
+}
