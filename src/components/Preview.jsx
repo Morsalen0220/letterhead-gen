@@ -1,58 +1,80 @@
 import React from 'react';
-import { Mail, Globe, Phone, MapPin } from 'lucide-react';
+import Template1 from './templates/Template1';
+import Template2 from './templates/Template2';
+import Template3 from './templates/Template3';
+import Template4 from './templates/Template4';
 
 export const Preview = React.forwardRef(({ info }, ref) => {
-  return (
-    <div 
-      ref={ref} 
-      className="w-[21cm] h-[29.7cm] bg-white text-slate-800 p-16 flex flex-col relative overflow-hidden print:shadow-none print:m-0 print:p-16"
-      style={{ 
-        fontFamily: info.design.fontFamily,
-        boxSizing: 'border-box' // Padding height-er bhitor thakbe
-      }}
-    >
-      {/* Design Elements */}
-      <div className="absolute top-0 right-0 w-64 h-64 rounded-bl-full opacity-10 -mr-20 -mt-20" style={{ backgroundColor: info.design.primaryColor }}></div>
-      <div className="absolute bottom-0 left-0 w-full h-1" style={{ backgroundColor: info.design.primaryColor }}></div>
+  const { layout, primaryColor, showWatermark, bodyFontSize } = info.design;
+  const { mode, name, designation, image, typedFont } = info.signature;
 
-      {/* Header */}
-      <div className="flex justify-between items-start border-b-2 pb-8 relative z-10" style={{ borderColor: info.design.primaryColor }}>
-        <div>
-          <h2 className="text-4xl font-black uppercase tracking-tighter" style={{ color: info.design.primaryColor }}>{info.companyName}</h2>
-          <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{info.tagline}</p>
-        </div>
-        <div className="text-right text-[10px] font-bold text-slate-600 uppercase space-y-1">
-          <p className="flex items-center justify-end gap-2"><MapPin size={10} style={{ color: info.design.primaryColor }} /> {info.contact.address}</p>
-          <p className="flex items-center justify-end gap-2"><Phone size={10} style={{ color: info.design.primaryColor }} /> {info.contact.phone}</p>
-          <p className="flex items-center justify-end gap-2"><Mail size={10} style={{ color: info.design.primaryColor }} /> {info.contact.email}</p>
-        </div>
-      </div>
+  const renderTemplateHeader = () => {
+    switch (layout) {
+      case 'modern': return <Template1 info={info} />;
+      case 'corporate': return <Template2 info={info} />;
+      case 'minimalist': return <Template3 info={info} />;
+      case 'sidebar': return <Template4 info={info} />;
+      default: return <Template1 info={info} />;
+    }
+  };
 
-      {/* Watermark Logic */}
-      {info.design.showWatermark && (
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03] rotate-[-35deg] z-0">
-          <h1 className="text-[120px] font-black uppercase">{info.companyName}</h1>
+  // Preview.jsx এর ভেতর নিচের পরিবর্তনটি করুন
+
+return (
+  <div ref={ref} className="w-[21cm] h-[29.7cm] bg-white text-slate-800 p-16 flex flex-col relative overflow-hidden print:shadow-none print:m-0">
+    
+    {/* ডিজাইন ডেকোরেশন (সব টেমপ্লেটের জন্য কমন রাখতে পারেন) */}
+    <div className="absolute top-0 left-0 w-full h-1.5" style={{ backgroundColor: primaryColor }}></div>
+
+    {/* টেমপ্লেট রেন্ডার হবে এখানে */}
+    <div className="w-full relative z-10">
+      {renderTemplateHeader()}
+    </div>
+
+    {/* বডি কন্টেন্ট (যেখানে ল্যাআউট অনুযায়ী সাইডবার ইফেক্ট দেওয়া যাবে) */}
+    <div className={`flex-1 relative z-10 w-full flex flex-col ${layout === 'sidebar' ? 'border-l-2 pl-8 ml-2' : ''}`} style={{ borderColor: layout === 'sidebar' ? `${primaryColor}20` : 'transparent' }}>
+      
+      {/* Watermark Section */}
+      {showWatermark && (
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.04] rotate-[-35deg] z-0 select-none">
+          <h1 className="text-[100px] font-black uppercase text-center leading-none break-words max-w-[90%]">{info.companyName}</h1>
         </div>
       )}
 
-      {/* Content Area */}
-      <div className="mt-16 flex-1 relative z-10">
-        <div className="flex justify-between mb-10 text-sm font-bold">
-          <div className="whitespace-pre-wrap text-slate-700">{info.letter.recipient}</div>
-          <div className="text-slate-400">DATE: {info.letter.date}</div>
-        </div>
-        <div className="mb-8 font-black uppercase text-sm border-l-4 pl-4" style={{ borderColor: info.design.primaryColor }}>
-          Subject: {info.letter.subject}
-        </div>
-        <div className="text-[14px] leading-relaxed text-slate-600 whitespace-pre-wrap text-justify">
-          {info.letter.body}
-        </div>
+      {/* Recipient & Date */}
+      <div className="flex justify-between mb-10 text-sm font-bold w-full relative z-10">
+        <div className="whitespace-pre-wrap border-l-4 pl-5 max-w-[65%] break-words leading-relaxed" style={{ borderColor: primaryColor }}>{info.letter.recipient}</div>
+        <div className="text-slate-500 uppercase whitespace-nowrap font-bold text-xs tracking-wider">Date: {info.letter.date}</div>
+      </div>
+      
+      {/* Subject */}
+      <div className="mb-8 font-black uppercase text-base text-slate-900 break-words pb-2 relative z-10">
+        Subject: {info.letter.subject}
       </div>
 
-      {/* Footer */}
-      <div className="mt-20 pt-8 border-t border-slate-100 text-center text-[9px] text-slate-300 uppercase font-black tracking-[0.5em]">
-        Official Document • {info.companyName}
+      {/* Body Text */}
+      <div 
+        className="text-slate-700 text-justify w-full whitespace-normal break-words [&>p]:mb-5 relative z-10"
+        style={{ fontSize: `${bodyFontSize || 15}px`, lineHeight: '1.9' }}
+        dangerouslySetInnerHTML={{ __html: info.letter.body }} 
+      />
+    </div>
+
+    {/* Footer Area */}
+    <div className="mt-auto pt-10 flex justify-between items-end relative z-10 w-full">
+      <div className="text-[10px] text-slate-300 font-bold uppercase tracking-widest">Official Document • {info.companyName}</div>
+      <div className="flex flex-col items-center min-w-[150px]">
+        <div className="h-12 flex items-end justify-center mb-3 w-full overflow-hidden">
+          {mode === 'type' ? (
+            <span style={{ fontFamily: typedFont }} className="text-2xl text-slate-800 whitespace-nowrap">{name}</span>
+          ) : (
+            image && <img src={image} alt="Signature" className="max-h-full max-w-full object-contain" />
+          )}
+        </div>
+        <p className="text-sm font-black text-slate-800 leading-none text-center uppercase">{name}</p>
+        <p className="text-[10px] text-slate-400 font-bold uppercase mt-1.5 text-center tracking-wider">{designation}</p>
       </div>
     </div>
-  );
+  </div>
+);
 });
