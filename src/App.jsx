@@ -1,8 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react'; // useEffect যুক্ত করা হয়েছে
 import { useReactToPrint } from 'react-to-print';
+import { toPng } from 'html-to-image';
 import Editor from './components/Editor';
 import { Preview } from './components/Preview'; 
-import { Download, Layout, Eye, Edit3 } from 'lucide-react';
+import { Download, Layout, Eye, Edit3, FileText, CircleAlert, ChevronDown } from 'lucide-react';
+// App.jsx er opore eivabe update korun
+
 
 function App() {
   const [activeTab, setActiveTab] = useState('editor'); // মোবাইল ট্যাবের জন্য স্টেট
@@ -71,6 +74,32 @@ function App() {
     localStorage.setItem('letterheadData', JSON.stringify(info));
   }, [info]);
 
+const handleDownloadImage = async () => {
+  // Letterhead-er container-er ID dite hobe
+  const element = document.getElementById('letterhead-preview'); 
+
+  if (!element) {
+    console.error("Preview element pawa jayni");
+    return;
+  }
+
+  try {
+    const dataUrl = await toPng(element, { 
+      cacheBust: true,
+      pixelRatio: 3, // High quality-r jonno 3 rakhte paren
+      backgroundColor: '#ffffff',
+    });
+
+    const link = document.createElement('a');
+    link.download = 'letterhead.png';
+    link.href = dataUrl;
+    link.click();
+  } catch (err) {
+    console.error('Image download korte somossa:', err);
+  }
+};
+
+
   return (
     <div className="min-h-screen bg-[#0f172a] text-white flex flex-col md:flex-row h-screen overflow-hidden font-sans">
       <style>{`
@@ -118,15 +147,30 @@ function App() {
 
       {/* Main Preview Area */}
       <div className={`${activeTab === 'preview' ? 'flex' : 'hidden'} md:flex flex-1 bg-slate-950 overflow-y-auto p-4 md:p-10 flex-col items-center`}>
-        <div className="w-full max-w-[21cm] flex justify-end mb-8 sticky top-0 z-20">
-          <button 
-            onClick={handlePrint}
-            className="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-8 py-3 rounded-xl font-black text-[10px] uppercase shadow-xl transition-all active:scale-95"
-          >
-            <Download size={14} /> Export PDF
-          </button>
-        </div>
+      {/* --- Mobile-Friendly Minimal Sticky Actions --- */}
+{/* --- Minimal Top-Right Action Group --- */}
+<div className="fixed top-24 right-4 md:top-32 md:right-10 z-50 flex flex-col sm:flex-row items-center gap-2 no-print">
+  
+  {/* PDF Button - Clean White */}
+  <button 
+    onClick={handlePrint}
+    className="group flex items-center gap-2  bg-blue-600 backdrop-blur-xl  text-white p-2.5 sm:px-5 sm:py-2.5 rounded-xl shadow-lg border border-white/20 transition-all active:scale-95 hover:bg-black"
+    title="Export PDF"
+  >
+    <FileText size={18} className="text-white-500" strokeWidth={2.5} />
+    <span className="hidden sm:inline text-[10px] font-black uppercase tracking-tighter">PDF</span>
+  </button>
 
+  {/* PNG Button - Modern Blue */}
+  <button 
+    onClick={handleDownloadImage}
+    className="group flex items-center gap-2 bg-blue-600 text-white p-2.5 sm:px-5 sm:py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-95 hover:bg-blue-500"
+    title="Save PNG"
+  >
+    <Download size={18} strokeWidth={2.5} />
+    <span className="hidden sm:inline text-[10px] font-black uppercase tracking-tighter">PNG</span>
+  </button>
+</div>
         <div className="transform scale-[0.35] sm:scale-[0.5] lg:scale-100 origin-top shadow-2xl mb-10 border border-white/5">
            <Preview ref={componentRef} info={info} />
         </div>

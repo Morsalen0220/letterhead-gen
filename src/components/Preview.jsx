@@ -21,7 +21,7 @@ export const Preview = React.forwardRef(({ info }, ref) => {
   // Preview.jsx এর ভেতর নিচের পরিবর্তনটি করুন
 
 return (
-  <div ref={ref} className="w-[21cm] h-[29.7cm] bg-white text-slate-800 p-16 flex flex-col relative overflow-hidden print:shadow-none print:m-0">
+  <div ref={ref} id="letterhead-preview" className="w-[21cm] h-[29.7cm] bg-white text-slate-800 p-16 flex flex-col relative overflow-hidden print:shadow-none print:m-0">
     
     {/* ডিজাইন ডেকোরেশন (সব টেমপ্লেটের জন্য কমন রাখতে পারেন) */}
     <div className="absolute top-0 left-0 w-full h-1.5" style={{ backgroundColor: primaryColor }}></div>
