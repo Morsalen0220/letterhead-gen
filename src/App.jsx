@@ -1,9 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react'; // useEffect যুক্ত করা হয়েছে
 import { useReactToPrint } from 'react-to-print';
-import { toPng } from 'html-to-image';
+import html2canvas from 'html2canvas';
+import { jsPDF } from 'jspdf';
 import Editor from './components/Editor';
 import { Preview } from './components/Preview'; 
-import { Download, Layout, Eye, Edit3, FileText, CircleAlert, ChevronDown } from 'lucide-react';
+import { Layout, Eye, Edit3, FileText, Printer } from 'lucide-react';
 // App.jsx er opore eivabe update korun
 
 
@@ -74,28 +75,30 @@ function App() {
     localStorage.setItem('letterheadData', JSON.stringify(info));
   }, [info]);
 
-const handleDownloadImage = async () => {
-  // Letterhead-er container-er ID dite hobe
-  const element = document.getElementById('letterhead-preview'); 
+const handleDownloadPdf = async () => {
+  const element = document.getElementById('letterhead-preview');
 
   if (!element) {
-    console.error("Preview element pawa jayni");
+    console.error('Preview element pawa jayni');
     return;
   }
 
   try {
-    const dataUrl = await toPng(element, { 
-      cacheBust: true,
-      pixelRatio: 3, // High quality-r jonno 3 rakhte paren
-      backgroundColor: '#ffffff',
+    const canvas = await html2canvas(element, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#ffffff'
     });
 
-    const link = document.createElement('a');
-    link.download = 'letterhead.png';
-    link.href = dataUrl;
-    link.click();
+    const imageData = canvas.toDataURL('image/png');
+    const pdf = new jsPDF('p', 'mm', 'a4');
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    pdf.addImage(imageData, 'PNG', 0, 0, pageWidth, pageHeight);
+    pdf.save('letterhead.pdf');
   } catch (err) {
-    console.error('Image download korte somossa:', err);
+    console.error('PDF download korte somossa:', err);
   }
 };
 
@@ -151,24 +154,24 @@ const handleDownloadImage = async () => {
 {/* --- Minimal Top-Right Action Group --- */}
 <div className="fixed top-24 right-4 md:top-32 md:right-10 z-50 flex flex-col sm:flex-row items-center gap-2 no-print">
   
-  {/* PDF Button - Clean White */}
+  {/* Print Button */}
   <button 
     onClick={handlePrint}
     className="group flex items-center gap-2  bg-blue-600 backdrop-blur-xl  text-white p-2.5 sm:px-5 sm:py-2.5 rounded-xl shadow-lg border border-white/20 transition-all active:scale-95 hover:bg-black"
-    title="Export PDF"
+    title="Print"
   >
-    <FileText size={18} className="text-white-500" strokeWidth={2.5} />
-    <span className="hidden sm:inline text-[10px] font-black uppercase tracking-tighter">PDF</span>
+    <Printer size={18} className="text-white-500" strokeWidth={2.5} />
+    <span className="hidden sm:inline text-[10px] font-black uppercase tracking-tighter">Print</span>
   </button>
 
-  {/* PNG Button - Modern Blue */}
+  {/* PDF Download Button */}
   <button 
-    onClick={handleDownloadImage}
+    onClick={handleDownloadPdf}
     className="group flex items-center gap-2 bg-blue-600 text-white p-2.5 sm:px-5 sm:py-2.5 rounded-xl shadow-lg shadow-blue-500/20 transition-all active:scale-95 hover:bg-blue-500"
-    title="Save PNG"
+    title="Download PDF"
   >
-    <Download size={18} strokeWidth={2.5} />
-    <span className="hidden sm:inline text-[10px] font-black uppercase tracking-tighter">PNG</span>
+    <FileText size={18} strokeWidth={2.5} />
+    <span className="hidden sm:inline text-[10px] font-black uppercase tracking-tighter">PDF</span>
   </button>
 </div>
         <div className="transform scale-[0.35] sm:scale-[0.5] lg:scale-100 origin-top shadow-2xl mb-10 border border-white/5">
